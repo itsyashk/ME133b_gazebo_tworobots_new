@@ -1,0 +1,138 @@
+<?xml version="1.0" ?>
+<sdf version="1.6">
+  <world name="mars_world">
+    <!-- A global light source -->
+    <include>
+      <uri>model://sun</uri>
+    </include>
+
+    <!-- Mars gravity -->
+    <physics type="ode">
+      <gravity>0 0 -3.711</gravity>
+      <ode>
+        <solver>
+          <type>quick</type>
+          <iters>100</iters>
+          <sor>1.0</sor>
+        </solver>
+        <constraints>
+          <cfm>0.0</cfm>
+          <erp>0.2</erp>
+          <contact_max_correcting_vel>100.0</contact_max_correcting_vel>
+          <contact_surface_layer>0.001</contact_surface_layer>
+        </constraints>
+      </ode>
+      <max_step_size>0.001</max_step_size>
+      <real_time_factor>1.0</real_time_factor>
+      <real_time_update_rate>1000</real_time_update_rate>
+    </physics>
+
+    <!-- Mars-like ground plane -->
+    <model name="mars_ground_plane">
+      <static>true</static>
+      <link name="link">
+        <collision name="collision">
+          <geometry>
+            <plane>
+              <normal>0 0 1</normal>
+              <size>100 100</size>
+            </plane>
+          </geometry>
+          <surface>
+            <friction>
+              <ode>
+                <mu>0.8</mu>
+                <mu2>0.8</mu2>
+              </ode>
+            </friction>
+          </surface>
+        </collision>
+        <visual name="visual">
+          <cast_shadows>false</cast_shadows>
+          <geometry>
+            <plane>
+              <normal>0 0 1</normal>
+              <size>100 100</size>
+            </plane>
+          </geometry>
+          <material>
+            <script>
+              <uri>file://media/materials/scripts/gazebo.material</uri>
+              <name>Gazebo/Mars</name>
+            </script>
+          </material>
+        </visual>
+      </link>
+    </model>
+
+    <!-- Add some Mars-like terrain features -->
+    <model name="mars_hill1">
+      <static>true</static>
+      <link name="link">
+        <collision name="collision">
+          <geometry>
+            <box>
+              <size>5 5 2</size>
+            </box>
+          </geometry>
+        </collision>
+        <visual name="visual">
+          <geometry>
+            <box>
+              <size>5 5 2</size>
+            </box>
+          </geometry>
+          <material>
+            <script>
+              <uri>file://media/materials/scripts/gazebo.material</uri>
+              <name>Gazebo/Red</name>
+            </script>
+          </material>
+        </visual>
+        <pose>10 10 1 0 0 0</pose>
+      </link>
+    </model>
+
+    <model name="mars_crater1">
+      <static>true</static>
+      <link name="link">
+        <collision name="collision">
+          <geometry>
+            <sphere>
+              <radius>3</radius>
+            </sphere>
+          </geometry>
+        </collision>
+        <visual name="visual">
+          <geometry>
+            <sphere>
+              <radius>3</radius>
+            </sphere>
+          </geometry>
+          <material>
+            <script>
+              <uri>file://media/materials/scripts/gazebo.material</uri>
+              <name>Gazebo/Grey</name>
+            </script>
+          </material>
+        </visual>
+        <pose>-8 -8 -2.5 0 0 0</pose>
+      </link>
+    </model>
+
+    <!-- Mars atmosphere settings -->
+    <atmosphere type="adiabatic">
+      <temperature>20.0</temperature>
+      <pressure>600.0</pressure>
+      <temperature_gradient>-0.0065</temperature_gradient>
+    </atmosphere>
+
+    <!-- Mars-like sky -->
+    <scene>
+      <ambient>0.8 0.6 0.4 1</ambient>
+      <background>0.9 0.7 0.5 1</background>
+      <shadows>true</shadows>
+    </scene>
+
+  </world>
+</sdf>
