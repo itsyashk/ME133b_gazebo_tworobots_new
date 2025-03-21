@@ -1,0 +1,213 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro" name="mars_robot">
+  
+  <!-- Include the differential drive plugin -->
+  <xacro:include filename="$(find mars_robots)/urdf/mars_robot.gazebo.xacro" />
+  
+  <!-- Robot Properties -->
+  <xacro:property name="chassis_length" value="0.5" />
+  <xacro:property name="chassis_width" value="0.3" />
+  <xacro:property name="chassis_height" value="0.15" />
+  <xacro:property name="chassis_mass" value="5.0" />
+  
+  <xacro:property name="wheel_radius" value="0.1" />
+  <xacro:property name="wheel_width" value="0.05" />
+  <xacro:property name="wheel_mass" value="0.5" />
+  <xacro:property name="wheel_offset_x" value="0.15" />
+  <xacro:property name="wheel_offset_y" value="0.175" />
+  <xacro:property name="wheel_offset_z" value="0.0" />
+  
+  <xacro:property name="caster_radius" value="0.05" />
+  <xacro:property name="caster_mass" value="0.5" />
+  
+  <!-- Base Footprint Link -->
+  <link name="$(arg robot_namespace)/base_footprint"/>
+  
+  <!-- Base Link -->
+  <link name="$(arg robot_namespace)/base_link">
+    <collision>
+      <origin xyz="0 0 ${chassis_height/2}" rpy="0 0 0"/>
+      <geometry>
+        <box size="${chassis_length} ${chassis_width} ${chassis_height}"/>
+      </geometry>
+    </collision>
+    <visual>
+      <origin xyz="0 0 ${chassis_height/2}" rpy="0 0 0"/>
+      <geometry>
+        <box size="${chassis_length} ${chassis_width} ${chassis_height}"/>
+      </geometry>
+      <material name="red">
+        <color rgba="0.8 0.2 0.2 1.0"/>
+      </material>
+    </visual>
+    <inertial>
+      <origin xyz="0 0 ${chassis_height/2}" rpy="0 0 0"/>
+      <mass value="${chassis_mass}"/>
+      <inertia 
+        ixx="${chassis_mass/12.0 * (chassis_width*chassis_width + chassis_height*chassis_height)}" 
+        ixy="0.0" 
+        ixz="0.0"
+        iyy="${chassis_mass/12.0 * (chassis_length*chassis_length + chassis_height*chassis_height)}" 
+        iyz="0.0"
+        izz="${chassis_mass/12.0 * (chassis_length*chassis_length + chassis_width*chassis_width)}"/>
+    </inertial>
+  </link>
+  
+  <!-- Base Footprint to Base Link Joint -->
+  <joint name="$(arg robot_namespace)/base_footprint_joint" type="fixed">
+    <parent link="$(arg robot_namespace)/base_footprint"/>
+    <child link="$(arg robot_namespace)/base_link"/>
+    <origin xyz="0 0 ${wheel_radius}" rpy="0 0 0"/>
+  </joint>
+  
+  <!-- Left Wheel Link -->
+  <link name="$(arg robot_namespace)/left_wheel">
+    <collision>
+      <origin xyz="0 0 0" rpy="${pi/2} 0 0"/>
+      <geometry>
+        <cylinder radius="${wheel_radius}" length="${wheel_width}"/>
+      </geometry>
+    </collision>
+    <visual>
+      <origin xyz="0 0 0" rpy="${pi/2} 0 0"/>
+      <geometry>
+        <cylinder radius="${wheel_radius}" length="${wheel_width}"/>
+      </geometry>
+      <material name="black">
+        <color rgba="0.1 0.1 0.1 1.0"/>
+      </material>
+    </visual>
+    <inertial>
+      <origin xyz="0 0 0" rpy="${pi/2} 0 0"/>
+      <mass value="${wheel_mass}"/>
+      <inertia
+        ixx="${wheel_mass/12.0 * (3*wheel_radius*wheel_radius + wheel_width*wheel_width)}"
+        ixy="0.0"
+        ixz="0.0"
+        iyy="${wheel_mass/12.0 * (3*wheel_radius*wheel_radius + wheel_width*wheel_width)}"
+        iyz="0.0"
+        izz="${wheel_mass/2.0 * wheel_radius*wheel_radius}"/>
+    </inertial>
+  </link>
+  
+  <!-- Left Wheel Joint -->
+  <joint name="$(arg robot_namespace)/left_wheel_joint" type="continuous">
+    <parent link="$(arg robot_namespace)/base_link"/>
+    <child link="$(arg robot_namespace)/left_wheel"/>
+    <origin xyz="${wheel_offset_x} ${wheel_offset_y} ${wheel_offset_z}" rpy="0 0 0"/>
+    <axis xyz="0 1 0"/>
+  </joint>
+  
+  <!-- Right Wheel Link -->
+  <link name="$(arg robot_namespace)/right_wheel">
+    <collision>
+      <origin xyz="0 0 0" rpy="${pi/2} 0 0"/>
+      <geometry>
+        <cylinder radius="${wheel_radius}" length="${wheel_width}"/>
+      </geometry>
+    </collision>
+    <visual>
+      <origin xyz="0 0 0" rpy="${pi/2} 0 0"/>
+      <geometry>
+        <cylinder radius="${wheel_radius}" length="${wheel_width}"/>
+      </geometry>
+      <material name="black">
+        <color rgba="0.1 0.1 0.1 1.0"/>
+      </material>
+    </visual>
+    <inertial>
+      <origin xyz="0 0 0" rpy="${pi/2} 0 0"/>
+      <mass value="${wheel_mass}"/>
+      <inertia
+        ixx="${wheel_mass/12.0 * (3*wheel_radius*wheel_radius + wheel_width*wheel_width)}"
+        ixy="0.0"
+        ixz="0.0"
+        iyy="${wheel_mass/12.0 * (3*wheel_radius*wheel_radius + wheel_width*wheel_width)}"
+        iyz="0.0"
+        izz="${wheel_mass/2.0 * wheel_radius*wheel_radius}"/>
+    </inertial>
+  </link>
+  
+  <!-- Right Wheel Joint -->
+  <joint name="$(arg robot_namespace)/right_wheel_joint" type="continuous">
+    <parent link="$(arg robot_namespace)/base_link"/>
+    <child link="$(arg robot_namespace)/right_wheel"/>
+    <origin xyz="${wheel_offset_x} -${wheel_offset_y} ${wheel_offset_z}" rpy="0 0 0"/>
+    <axis xyz="0 1 0"/>
+  </joint>
+  
+  <!-- Caster Wheel Link -->
+  <link name="$(arg robot_namespace)/caster_wheel">
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <sphere radius="${caster_radius}"/>
+      </geometry>
+    </collision>
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <sphere radius="${caster_radius}"/>
+      </geometry>
+      <material name="black">
+        <color rgba="0.1 0.1 0.1 1.0"/>
+      </material>
+    </visual>
+    <inertial>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <mass value="${caster_mass}"/>
+      <inertia
+        ixx="${2.0*caster_mass*caster_radius*caster_radius/5.0}"
+        ixy="0.0"
+        ixz="0.0"
+        iyy="${2.0*caster_mass*caster_radius*caster_radius/5.0}"
+        iyz="0.0"
+        izz="${2.0*caster_mass*caster_radius*caster_radius/5.0}"/>
+    </inertial>
+  </link>
+  
+  <!-- Caster Wheel Joint -->
+  <joint name="$(arg robot_namespace)/caster_wheel_joint" type="fixed">
+    <parent link="$(arg robot_namespace)/base_link"/>
+    <child link="$(arg robot_namespace)/caster_wheel"/>
+    <origin xyz="-${chassis_length/4} 0 -${caster_radius/2}" rpy="0 0 0"/>
+  </joint>
+  
+  <!-- LiDAR Sensor Link -->
+  <link name="$(arg robot_namespace)/lidar_link">
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <cylinder radius="0.05" length="0.04"/>
+      </geometry>
+    </collision>
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <cylinder radius="0.05" length="0.04"/>
+      </geometry>
+      <material name="blue">
+        <color rgba="0.0 0.0 0.8 1.0"/>
+      </material>
+    </visual>
+    <inertial>
+      <mass value="0.1"/>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <inertia
+        ixx="0.001"
+        ixy="0.0"
+        ixz="0.0"
+        iyy="0.001"
+        iyz="0.0"
+        izz="0.001"/>
+    </inertial>
+  </link>
+  
+  <!-- LiDAR Sensor Joint -->
+  <joint name="$(arg robot_namespace)/lidar_joint" type="fixed">
+    <parent link="$(arg robot_namespace)/base_link"/>
+    <child link="$(arg robot_namespace)/lidar_link"/>
+    <origin xyz="0 0 ${chassis_height + 0.02}" rpy="0 0 0"/>
+  </joint>
+  
+</robot>
