@@ -1,0 +1,7 @@
+rviz2:
+  ros__parameters:
+    use_sim_time: true
+    qos_overrides:
+      /tf_static:
+        reliability: reliable
+        durability: transient_local
